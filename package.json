@@ -1,0 +1,33 @@
+{
+  "name": "als-simple-css",
+  "version": "9.1.0",
+  "description": "Simplify building CSS styles with JS.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "build": "node build.js",
+    "watch": "node build.js --watch",
+    "test": "node ./tests/run-tests.js"
+  },
+  "keywords": [
+    "css",
+    "javascript",
+    "stylesheet",
+    "dynamic",
+    "runtime",
+    "shortcut",
+    "simple",
+    "als-simple-css",
+    "responsive",
+    "interactive",
+    "lightweight",
+    "property-shortcut",
+    "automation",
+    "error-handling",
+    "utility-methods"
+  ],
+  "author": "Alex Sorkin",
+  "license": "MIT"
+}

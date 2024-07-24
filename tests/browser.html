@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <script src="/simple.js"></script>
+   <title>Document</title>
+</head>
+
+<body>
+</body>
+<script>
+
+function testSimpleDollar() {
+   Simple.$('test-color', 'red');
+   const value = Simple.$('test-color');
+   console.assert(value.trim() === 'red', `Failed Simple.$: Expected red, got ${value}`);
+}
+
+function testSimplePublish() {
+   new Simple([
+      { 'body': { '--test-color': 'blue' } },
+      { 'div.test': { 'background-color': 'var(--test-color)' } }
+   ]).publish()
+
+   const testDiv = document.createElement('div');
+   testDiv.className = 'test';
+   document.body.appendChild(testDiv);
+
+   const divStyle = window.getComputedStyle(testDiv);
+   console.assert(divStyle.backgroundColor === 'rgb(0, 0, 255)', `Failed simple.publish: Expected background color to be blue`);
+   document.body.removeChild(testDiv);
+}
+
+function testSimpleDollarToggle() {
+   Simple.$('toggle-color', 'red');
+   let value = Simple.$('toggle-color');
+   console.assert(value.trim() === 'red', `Failed Simple.$ toggle: Expected initial value red, got ${value}`);
+
+   Simple.$('toggle-color', 'red', 'blue'); // Переключение
+   value = Simple.$('toggle-color');
+   console.assert(value.trim() === 'blue', `Failed Simple.$ toggle: Expected toggled value blue, got ${value}`);
+}
+
+
+function runAllTests() {
+   testSimpleDollar();
+   testSimplePublish();
+   testSimpleDollarToggle();
+
+   console.log("All tests completed.");
+}
+
+runAllTests();
+
+</script>
+
+</html>
