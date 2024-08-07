@@ -1,15 +1,15 @@
 {
   "name": "als-simple-css",
-  "version": "9.1.0",
+  "version": "9.2.0",
   "description": "Simplify building CSS styles with JS.",
   "main": "index.js",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
-    "build": "node build.js",
-    "watch": "node build.js --watch",
-    "test": "node ./tests/run-tests.js"
+    "build": "node ./scripts/build.js",
+    "watch": "node ./scripts/build.js --watch",
+    "readme": "node ./scripts/readme.js"
   },
   "keywords": [
     "css",
@@ -29,5 +29,12 @@
     "utility-methods"
   ],
   "author": "Alex Sorkin",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "als-css-parse": "^1.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexsorkin7/als-simple-css"
+  }
 }

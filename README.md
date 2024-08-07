@@ -1,7 +1,7 @@
 # als-simple-css
 Simple CSS is a powerful JavaScript library that allows developers to construct and manage CSS stylesheets dynamically with JS.
 
-<img src="./simplecss.gif">
+<img src="./docs/simplecss.gif">
 
 **Features**:
 * JavaScript-Powered: With Simple CSS, your stylesheet is a JavaScript object. You get all the power of JavaScript - variables, loops, conditionals - to use in your styles.
@@ -466,3 +466,109 @@ new Simple([
 <div class="block">Hello</div>
 ```
 
+
+## Builder
+
+Now you can use builder (and watch with node tools) for converting js files to css code. 
+
+build.js
+```js
+const build = require('als-simple-css/build')
+const spaces = 0; // 3 by default
+const comments = false; // true by default
+build('./src/styles.js','./dest/styles.css',spaces,comments)
+```
+
+```bash
+node build
+```
+
+```bash
+node --watch build
+```
+
+
+### Example
+
+styles.js
+```js
+const colors = [
+   ['red','red'],
+   ['blue','blue'],
+   ['green','green']
+]
+
+const styles = /*scss*/`
+:root {
+   ${colors.map(([name,color]) => `$${name}:${color}`).join(';')}
+}
+body {
+   background-color:blue;
+   & .test {
+      background-color:red;
+   }
+}
+.some {
+   background:url('./image.jpg');
+   &:hover {
+      color:$blue;
+   }
+}
+
+${colors.map(([name,color]) => {
+   return /*scss*/`
+   .btn-${name} {
+      background-color:$${color};
+      color:white;
+      &:hover {
+         background-color:inherit;
+      }
+   }
+   `
+}).join('\n')}
+`
+
+module.exports = styles
+```
+
+style.css (result)
+```css
+:root {
+   --red:red;
+   --blue:blue;
+   --green:green
+}
+body {
+   background-color:blue
+}
+body .test {
+   background-color:red
+}
+.some {
+   background:url('./image.jpg')
+}
+.some:hover {
+   color:var(--blue)
+}
+.btn-red {
+   background-color:var(--red);
+   color:white
+}
+.btn-red:hover {
+   background-color:inherit
+}
+.btn-blue {
+   background-color:var(--blue);
+   color:white
+}
+.btn-blue:hover {
+   background-color:inherit
+}
+.btn-green {
+   background-color:var(--green);
+   color:white
+}
+.btn-green:hover {
+   background-color:inherit
+}
+```
