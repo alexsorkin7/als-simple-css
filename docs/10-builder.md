@@ -2,6 +2,8 @@
 
 Now you can use builder (and watch with node tools) for converting js files to css code. 
 
+User `Simple Css Syntax` plugin for VsCode to highlight the syntax. 
+
 build.js
 ```js
 const build = require('als-simple-css/build')
@@ -29,7 +31,7 @@ const colors = [
    ['green','green']
 ]
 
-const styles = /*scss*/`
+const styles = /*simple*/`
 :root {
    ${colors.map(([name,color]) => `$${name}:${color}`).join(';')}
 }

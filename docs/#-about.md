@@ -1,8 +1,6 @@
 # als-simple-css
 Simple CSS is a powerful JavaScript library that allows developers to construct and manage CSS stylesheets dynamically with JS.
 
-<img src="./docs/simplecss.gif">
-
 **Features**:
 * JavaScript-Powered: With Simple CSS, your stylesheet is a JavaScript object. You get all the power of JavaScript - variables, loops, conditionals - to use in your styles.
 * Dynamic Stylesheet Management: Simple CSS allows you to add, modify, and manipulate your styles at runtime, creating interactive and responsive stylesheets.

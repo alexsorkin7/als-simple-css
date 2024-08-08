@@ -1,8 +1,6 @@
 # als-simple-css
 Simple CSS is a powerful JavaScript library that allows developers to construct and manage CSS stylesheets dynamically with JS.
 
-<img src="./docs/simplecss.gif">
-
 **Features**:
 * JavaScript-Powered: With Simple CSS, your stylesheet is a JavaScript object. You get all the power of JavaScript - variables, loops, conditionals - to use in your styles.
 * Dynamic Stylesheet Management: Simple CSS allows you to add, modify, and manipulate your styles at runtime, creating interactive and responsive stylesheets.
@@ -11,36 +9,6 @@ Simple CSS is a powerful JavaScript library that allows developers to construct 
 * Lightweight: Simple CSS is lightweight and has no dependencies, making it an easy addition to any project.
 
 
-# Release notes for als-simple-css 9
-
-* ColorTools class - separted package `als-color-tools`
-* Improved code (builded from scratch)
-* `#` syntax for comments
-* few selectors in objects [{selector:{},selector1:{}},'# some comment']
-* nested styles support
-* short syntax for calc ([calc])
-* nested variables ($var($anotherVar))
-* Node version and browser versions are different
-
-## 9.1 release
-
-* Few short calc syntax `[]` in one property issue solved
-   * `.some:{padding:'[$p/3] [$p/2]'}`
-* Variables with dash inside calc - solved
-  * `{padding:'[$p-some/3]'}`
-* Nested selector with multimple selectors - solved (see example below)
-```js
-new Simple([
-   {'.btn-shaded':{
-      bgc:'blue',c:`white`,
-      ':not(:disabled)':{
-         ':hover,:focus':{
-            bgc:'lightblue',c:'darkblue'
-         },
-      }
-   }},
-])
-```
 
 ## Install, import and basic usage
 
@@ -471,6 +439,8 @@ new Simple([
 
 Now you can use builder (and watch with node tools) for converting js files to css code. 
 
+User `Simple Css Syntax` plugin for VsCode to highlight the syntax. 
+
 build.js
 ```js
 const build = require('als-simple-css/build')
@@ -498,7 +468,7 @@ const colors = [
    ['green','green']
 ]
 
-const styles = /*scss*/`
+const styles = /*simple*/`
 :root {
    ${colors.map(([name,color]) => `$${name}:${color}`).join(';')}
 }
