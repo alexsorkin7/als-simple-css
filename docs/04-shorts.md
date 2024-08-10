@@ -105,16 +105,15 @@ You can easily add your own shortcuts, by adding second parameter to constructor
 Here is the example:
 
 ```js
-const shorts = {
-   aic:'animation-iteration-count',
-   atf:'animation-timing-function'
-}
+Simple.shorts.aic = 'animation-iteration-count';
+Simple.shorts.atf = 'animation-timing-function';
 const styles = [
    {'.some':{
-      aic:'3',atf:'linear'
+      aic:'3',
+      atf:'linear'
    }}
 ]
-const simple = new Simple(styles,shorts)
+const simple = new Simple(styles)
 console.log(simple.stylesheet())
 ```
 

@@ -36,7 +36,6 @@ const simple = new Simple([
 ])
 ```
 
-
 ### @At rules
 
 Each @at rule set, has to be in separated object. 
@@ -121,23 +120,104 @@ Example:
 }
 ```
 
-
-### Publish tools
-
-Once you have defined your styles, you create a new instance of the Simple class and pass the styles array to the constructor. After that, you can either publish the styles to the browser using the publish() method, or retrieve the raw stylesheet using the stylesheet() method.
+### Variables
+You can use css variables as is or to use shorter syntax as shown below:
+* `{$varname:'value'}` equivalent to --varname:value
+* `$varname(value)` equivalent to var(--varname,value)
+* `$varname` equivalent to var(--varname)
 
 Example:
-
-```js
-const styles = [ /* your styles here */ ];
-
-const simple = new Simple(styles);
-
-// Publish the styles to the browser:
-simple.publish();
-
-// Or retrieve the raw stylesheet:
-const rawStyles = simple.stylesheet(spaces);
+```javascript
+let styles = [
+   {":root":{$w:'50px'}}, // --w:50px
+   {".some": {width:'$w'}}, // width:var(--w)
+   {".some1": {height:'$h(50px)'}} // height:var(--h,50px)
+   {".nested": {height:'$some($w)'}} // height:var(--some,var(--w))
+]
 ```
 
-If `spaces` is undefined, you getting minified version. Otherwise it formated by spaces parameter wich is number of spaces. 
+### Calc syntax
+
+You can use css calc function in regular way, like:
+
+```js
+[
+   {'.some':{
+      m:'calc(1rem / 2)',
+      b:'calc(var(--space) * 2) solid black'
+   }}
+]
+```
+
+Or in short way, like this:
+```js
+[
+   {'.some':{
+      m:'[1rem/2]',
+      b:'[$space*2] solid black'
+   }}
+]
+```
+
+The spaces around operation sign added automatically. 
+
+### !important
+By using ``!`` in property's value, you add ``!important``. 
+
+For example:
+```javascript
+let styles = [
+   {'.test':{color:'red'}},
+   {'.test':{color:'green !'}}, // color: green !important
+]
+```
+
+### Comments and Charset Declarations
+
+With Simple CSS, you can insert comments or any other string such as charset declarations into your styles array. These are inserted as separate string items in the array.
+
+For instance, if you want to add a comment, you can include it as a string in the styles array, like this:
+
+```js
+const styles = new Simple([
+   {'.test':{c:'red'}},
+   '# comment ', // /* comment */
+   {'.test2':{c:'green'}},
+])
+```
+
+Similarly, you can add a charset declaration to the stylesheet. For example, if you want to specify UTF-8 as the charset, you can do so as follows:
+
+```js
+const styles = new Simple([
+   '@charset "UTF-8";',
+   {'.test':{c:'red'}},
+   {'.test2':{c:'green'}},
+])
+```
+
+### Nested styles
+
+You can use nested styles like this:
+```js
+const simple = new Simple([{
+   'div': { 
+      color: 'blue',
+      ':hover': { color: 'red' },
+      ':focus': { color: 'green' },
+   },
+}]).stylesheet(3)
+```
+
+The result:
+```css
+div {
+   color:blue
+}
+div:hover {
+   color:red
+}
+div:focus {
+   color:green
+}
+```

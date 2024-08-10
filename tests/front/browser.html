@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <script src="/simple.js"></script>
+   <title>Document</title>
+</head>
+
+<body>
+</body>
+<script src="./test-runner.js"></script>
+<script>
+
+it('Test $ method', () => {
+   Simple.$('test-color', 'red');
+   const value = Simple.$('test-color');
+   assert(value.trim() === 'red', `Failed Simple.$: Expected red, got ${value}`);
+})
+
+it('Test publish', () => {
+   new Simple([
+      { 'body': { '--test-color': 'blue' } },
+      { 'div.test': { 'background-color': 'var(--test-color)' } }
+   ]).publish()
+
+   const testDiv = document.createElement('div');
+   testDiv.className = 'test';
+   document.body.appendChild(testDiv);
+
+   const divStyle = window.getComputedStyle(testDiv);
+   assert(divStyle.backgroundColor === 'rgb(0, 0, 255)', `Failed simple.publish: Expected background color to be blue`);
+   document.body.removeChild(testDiv);
+
+})
+
+it('$ toggle', () => {
+   Simple.$('toggle-color', 'red');
+   let value = Simple.$('toggle-color');
+   assert(value.trim() === 'red', `Failed Simple.$ toggle: Expected initial value red, got ${value}`);
+
+   Simple.$('toggle-color', 'red', 'blue'); // Переключение
+   value = Simple.$('toggle-color');
+   assert(value.trim() === 'blue', `Failed Simple.$ toggle: Expected toggled value blue, got ${value}`);
+})
+
+it('convertStylesToCSS should correctly convert styles to CSS', () => {
+   const styles = [{ body: { color: 'red' } }]
+   const simple = new Simple(styles)
+   assert.deepStrictEqual(simple.styles,styles);
+});
+
+it('getVars should correctly handle CSS variable substitution', () => {
+   const simple = new Simple([{
+      ':root': { $someTest: '5px' },
+      div: {
+         border: `$someTest solid $color(black)`,
+         margin: `$m($someTest)`
+      }
+   }])
+   const expected = [
+      {
+         ":root": {
+            "--some-test": "5px"
+         }
+      },
+      {
+         "div": {
+            "border": "var(--some-test) solid var(--color,black)",
+            "margin": "var(--m,var(--some-test))"
+         }
+      }
+   ]
+   assert.deepStrictEqual(simple.styles,expected)
+});
+
+it('getRules should correctly form CSS rules', () => {
+   const simple = new Simple([{ body: { color: 'red' } }])
+   const stylesheet = simple.stylesheet()
+   assert(stylesheet.includes('body {'))
+   assert(stylesheet.includes('color:red'))
+});
+
+it('Comments', () => {
+   const simple = new Simple(['# Some comment',{ body: { color: 'red' } }])
+   const stylesheet = simple.stylesheet()
+   assert(stylesheet.includes('/* Some comment'))
+});
+
+
+runTests()
+
+</script>
+
+</html>

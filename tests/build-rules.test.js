@@ -57,6 +57,12 @@ describe('buildCalc tests', () => {
       const expected = 'calc($width + (100px - 20px))';
       assert.strictEqual(result, expected);
    });
+
+   it('handles calc with var', () => {
+      const result = buildCalc('[$width + (var(--some) - 20px)]');
+      const expected = 'calc($width + (var(--some) - 20px))';
+      assert.strictEqual(result, expected);
+   });
 })
 
 describe('buildPropValue tests', () => {

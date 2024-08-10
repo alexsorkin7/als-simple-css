@@ -1,38 +1,112 @@
 # als-simple-css
-Simple CSS is a powerful JavaScript library that allows developers to construct and manage CSS stylesheets dynamically with JS.
 
-**Features**:
-* JavaScript-Powered: With Simple CSS, your stylesheet is a JavaScript object. You get all the power of JavaScript - variables, loops, conditionals - to use in your styles.
-* Dynamic Stylesheet Management: Simple CSS allows you to add, modify, and manipulate your styles at runtime, creating interactive and responsive stylesheets.
-* Shortcuts for Common Styles: Shortcuts for frequent CSS properties are readily available in Simple CSS, making your style definitions compact and easy to read.
-* Automated Conversion: The library automatically converts JavaScript style definitions to CSS, handling even tricky parts like camelCase to kebab-case conversion, and much more.
-* Lightweight: Simple CSS is lightweight and has no dependencies, making it an easy addition to any project.
+<img src="./docs/logo.png" width="50" alt="als simple css">
 
 
+**Als-Simple-Css** is a powerful JavaScript library for dynamically constructing and managing CSS stylesheets directly from JavaScript. This flexible tool allows developers to use JavaScript features, such as imports, loops, and variables, to create CSS on the fly in the browser.
 
-## Install, import and basic usage
+![example](./docs/simplecss.gif)
 
-For instalation:
+## Features:
+- **Dynamic Style Creation**: Create CSS stylesheets on the fly using the full power of JavaScript, including control structures like loops and conditional statements.
+- **Simplified Syntax**: Utilize shorthand notation for CSS properties, making the code more compact and readable.
+- **Nested Styles**: Structure your CSS rules with nesting similar to SASS for cleaner and more organized style management.
+- **Powerful Color Tools**: Includes functions for transforming and manipulating colors, facilitating dynamic theme and style changes.
+- **In-browser Stylesheet Construction**: Integrate and apply styles instantly, optimizing performance and speeding up page loads.
+
+
+
+## New in version 10.00
+
+* Code refactoring
+* Added
+  * `Simple.raw(rawSimple)`
+  * `Simple.styles(simples)`
+  * `Simple.ColorTools`
+  * `n` parameter - stylesheet(spaces,n)
+  * `Simple.shorts`
+    * No second parameter `shorts` in constructor
+* Documentation changes
+
+## Installation, Import, and Basic Usage
+
+### Installation
+To install `als-simple-css`, run the following command:
 ```bash
 npm i als-simple-css
 ```
 
-Use in browser:
+### Usage in Browser
+Include the necessary scripts in your HTML file. Make sure to adjust the paths according to your project's structure.
 ```html
+<!-- Optional: Include cssParser if you plan to use Simple.raw -->
+<script src="/node_modules/als-css-parse/css-parser.js"></script>
+
+<!-- Optional: Include ColorTools if you plan to use Simple.ColorTools or ColorTools -->
+<script src="/node_modules/als-color-tools/color-tools.js"></script>
+
 <script src="/node_modules/als-simple-css/simple.js"></script>
 ```
 
-Use as commonjs:
+### Usage as CommonJS Module
+For Node.js applications or when using a bundler that supports CommonJS:
 ```js
-const Simple = require('als-simple-css')
+const Simple = require('als-simple-css');
 ```
 
-Use as module:
+### Usage as ES Module
+For modern JavaScript projects that support ES Modules:
 ```js
-import Simple from 'als-simple-css/simple.mjs'
+import Simple from 'als-simple-css/simple.mjs';
 ```
 
+## Basic Usage
 
+### Creating Styles
+You can create styles using either structured JavaScript objects or raw CSS strings. The `Simple` class provides two static methods for these purposes: `Simple.styles()` for JavaScript objects and `Simple.raw()` for raw CSS strings.
+
+#### Using Simple.styles
+This method takes an array of style objects:
+```js
+const arr = [
+    {'.selector': { color: 'red', margin: '10px' }}
+]
+const styles = Simple.styles(arr);
+// or 
+const styles = new Simple(arr);
+console.log(styles.stylesheet());
+```
+
+#### Using Simple.raw
+This method parses a raw CSS string:
+```js
+const rawStyles = Simple.raw(`
+.selector {
+    color: red;
+    margin: 10px;
+}
+`);
+console.log(rawStyles.stylesheet());
+```
+
+>Tip: Use `Simple Css Syntax` plugin for VsCode to highlight the raw syntax. 
+
+The result:
+```css
+.selector {color:red;margin:10px}
+```
+
+The `stylesheet` method has 2 parameters:
+1. `spaces` (0 by default) - use for formating code by spaces
+2. `n` ('\n' by default) - use for new line formating
+
+The result for `stylesheet(3)`:
+```css
+.selector {
+   color:red;
+   margin:10px
+}
+```
 ## Syntax Overview
 The Simple class in the Simple CSS library works with an array of style objects. Each object represents a CSS rule set/s, media query, or keyframe definition.
 
@@ -70,7 +144,6 @@ const simple = new Simple([
   }}
 ])
 ```
-
 
 ### @At rules
 
@@ -156,27 +229,107 @@ Example:
 }
 ```
 
-
-### Publish tools
-
-Once you have defined your styles, you create a new instance of the Simple class and pass the styles array to the constructor. After that, you can either publish the styles to the browser using the publish() method, or retrieve the raw stylesheet using the stylesheet() method.
+### Variables
+You can use css variables as is or to use shorter syntax as shown below:
+* `{$varname:'value'}` equivalent to --varname:value
+* `$varname(value)` equivalent to var(--varname,value)
+* `$varname` equivalent to var(--varname)
 
 Example:
-
-```js
-const styles = [ /* your styles here */ ];
-
-const simple = new Simple(styles);
-
-// Publish the styles to the browser:
-simple.publish();
-
-// Or retrieve the raw stylesheet:
-const rawStyles = simple.stylesheet(spaces);
+```javascript
+let styles = [
+   {":root":{$w:'50px'}}, // --w:50px
+   {".some": {width:'$w'}}, // width:var(--w)
+   {".some1": {height:'$h(50px)'}} // height:var(--h,50px)
+   {".nested": {height:'$some($w)'}} // height:var(--some,var(--w))
+]
 ```
 
-If `spaces` is undefined, you getting minified version. Otherwise it formated by spaces parameter wich is number of spaces. 
+### Calc syntax
 
+You can use css calc function in regular way, like:
+
+```js
+[
+   {'.some':{
+      m:'calc(1rem / 2)',
+      b:'calc(var(--space) * 2) solid black'
+   }}
+]
+```
+
+Or in short way, like this:
+```js
+[
+   {'.some':{
+      m:'[1rem/2]',
+      b:'[$space*2] solid black'
+   }}
+]
+```
+
+The spaces around operation sign added automatically. 
+
+### !important
+By using ``!`` in property's value, you add ``!important``. 
+
+For example:
+```javascript
+let styles = [
+   {'.test':{color:'red'}},
+   {'.test':{color:'green !'}}, // color: green !important
+]
+```
+
+### Comments and Charset Declarations
+
+With Simple CSS, you can insert comments or any other string such as charset declarations into your styles array. These are inserted as separate string items in the array.
+
+For instance, if you want to add a comment, you can include it as a string in the styles array, like this:
+
+```js
+const styles = new Simple([
+   {'.test':{c:'red'}},
+   '# comment ', // /* comment */
+   {'.test2':{c:'green'}},
+])
+```
+
+Similarly, you can add a charset declaration to the stylesheet. For example, if you want to specify UTF-8 as the charset, you can do so as follows:
+
+```js
+const styles = new Simple([
+   '@charset "UTF-8";',
+   {'.test':{c:'red'}},
+   {'.test2':{c:'green'}},
+])
+```
+
+### Nested styles
+
+You can use nested styles like this:
+```js
+const simple = new Simple([{
+   'div': { 
+      color: 'blue',
+      ':hover': { color: 'red' },
+      ':focus': { color: 'green' },
+   },
+}]).stylesheet(3)
+```
+
+The result:
+```css
+div {
+   color:blue
+}
+div:hover {
+   color:red
+}
+div:focus {
+   color:green
+}
+```
 ## Property Shortcuts
 In addition to the main syntax, the Simple class also provides an extensive list of property shortcuts. These are shortened representations of common CSS properties, designed to make your styles more concise and easier to write. 
 
@@ -284,16 +437,15 @@ You can easily add your own shortcuts, by adding second parameter to constructor
 Here is the example:
 
 ```js
-const shorts = {
-   aic:'animation-iteration-count',
-   atf:'animation-timing-function'
-}
+Simple.shorts.aic = 'animation-iteration-count';
+Simple.shorts.atf = 'animation-timing-function';
 const styles = [
    {'.some':{
-      aic:'3',atf:'linear'
+      aic:'3',
+      atf:'linear'
    }}
 ]
-const simple = new Simple(styles,shorts)
+const simple = new Simple(styles)
 console.log(simple.stylesheet())
 ```
 
@@ -306,110 +458,29 @@ The output:
 ```
 
 
-## Variables
-You can use css variables as is or to use shorter syntax as shown below:
-* `{$varname:'value'}` equivalent to --varname:value
-* `$varname(value)` equivalent to var(--varname,value)
-* `$varname` equivalent to var(--varname)
+## Publish tools
+
+Once you have defined your styles, you create a new instance of the Simple class and pass the styles array to the constructor. After that, you can either publish the styles to the browser using the publish() method, or retrieve the raw stylesheet using the stylesheet() method.
+
+> This method available only in browser's version
 
 Example:
-```javascript
-let styles = [
-   {":root":{$w:'50px'}}, // --w:50px
-   {".some": {width:'$w'}}, // width:var(--w)
-   {".some1": {height:'$h(50px)'}} // height:var(--h,50px)
-   {".nested": {height:'$some($w)'}} // height:var(--some,var(--w))
-]
-```
-
-## Calc syntax
-
-You can use css calc function in regular way, like:
 
 ```js
-[
-   {'.some':{
-      m:'calc(1rem / 2)',
-      b:'calc(var(--space) * 2) solid black'
-   }}
-]
+const styles = [ /* your styles here */ ];
+
+const simple = new Simple(styles);
+
+// Publish the styles to the browser:
+simple.publish();
+
+// Or retrieve the raw stylesheet:
+const rawStyles = simple.stylesheet(spaces,n);
 ```
 
-Or in short way, like this:
-```js
-[
-   {'.some':{
-      m:'[1rem/2]',
-      b:'[$space*2] solid black'
-   }}
-]
-```
+If `spaces` is undefined, you getting minified version. Otherwise it formated by spaces parameter wich is number of spaces. 
+The `n` parameter is a line separator. By default it's `\n`.
 
-The spaces around operation sign added automatically. 
-
-## !important
-By using ``!`` in property's value, you add ``!important``. 
-
-For example:
-```javascript
-let styles = [
-   {'.test':{color:'red'}},
-   {'.test':{color:'green !'}}, // color: green !important
-]
-```
-
-## Comments and Charset Declarations
-
-With Simple CSS, you can insert comments or any other string such as charset declarations into your styles array. These are inserted as separate string items in the array.
-
-For instance, if you want to add a comment, you can include it as a string in the styles array, like this:
-
-```js
-const styles = new Simple([
-   {'.test':{c:'red'}},
-   '# comment ', // /* comment */
-   {'.test2':{c:'green'}},
-])
-```
-
-Similarly, you can add a charset declaration to the stylesheet. For example, if you want to specify UTF-8 as the charset, you can do so as follows:
-
-```js
-const styles = new Simple([
-   '@charset "UTF-8";',
-   {'.test':{c:'red'}},
-   {'.test2':{c:'green'}},
-])
-```
-
-
-
-
-## Nested styles
-
-You can use nested styles like this:
-```js
-const simple = new Simple([{
-   'div': { 
-      color: 'blue',
-      ':hover': { color: 'red' },
-      ':focus': { color: 'green' },
-   },
-}]).stylesheet('  ')
-```
-
-The result:
-```css
-div {
-   color:blue
-}
-div:hover {
-   color:red
-}
-div:focus {
-   color:green
-}
-```
 ## Variable Management
 
 You can manage global css variables with `Simple.$(varName,varValue,varValue2)` method. Here how it works:
@@ -434,111 +505,25 @@ new Simple([
 <div class="block">Hello</div>
 ```
 
+> This method available only in browser's version
+## Color Tools
 
-## Builder
+The Node version has static property `Simple.ColorTools` which is `ColorTools` class dependency. 
+You can view documentation in [als-color-tools](https://www.npmjs.com/package/als-color-tools)
+## Build and Watch with NodeJs
 
-Now you can use builder (and watch with node tools) for converting js files to css code. 
-
-User `Simple Css Syntax` plugin for VsCode to highlight the syntax. 
+The folowing example will create css file:
 
 build.js
 ```js
-const build = require('als-simple-css/build')
-const spaces = 0; // 3 by default
-const comments = false; // true by default
-build('./src/styles.js','./dest/styles.css',spaces,comments)
+const Simple = require('als-simple-css')
+const styles = require('./styles.js')
+const css = Simple.raw(styles).stylesheet(3)
+require('fs').writeFileSync('./styles.css',css,'utf-8')
 ```
 
+You can watch for changes with Node watcher (Node v18.11 and higher):
 ```bash
-node build
+node --watch build.js
 ```
 
-```bash
-node --watch build
-```
-
-
-### Example
-
-styles.js
-```js
-const colors = [
-   ['red','red'],
-   ['blue','blue'],
-   ['green','green']
-]
-
-const styles = /*simple*/`
-:root {
-   ${colors.map(([name,color]) => `$${name}:${color}`).join(';')}
-}
-body {
-   background-color:blue;
-   & .test {
-      background-color:red;
-   }
-}
-.some {
-   background:url('./image.jpg');
-   &:hover {
-      color:$blue;
-   }
-}
-
-${colors.map(([name,color]) => {
-   return /*scss*/`
-   .btn-${name} {
-      background-color:$${color};
-      color:white;
-      &:hover {
-         background-color:inherit;
-      }
-   }
-   `
-}).join('\n')}
-`
-
-module.exports = styles
-```
-
-style.css (result)
-```css
-:root {
-   --red:red;
-   --blue:blue;
-   --green:green
-}
-body {
-   background-color:blue
-}
-body .test {
-   background-color:red
-}
-.some {
-   background:url('./image.jpg')
-}
-.some:hover {
-   color:var(--blue)
-}
-.btn-red {
-   background-color:var(--red);
-   color:white
-}
-.btn-red:hover {
-   background-color:inherit
-}
-.btn-blue {
-   background-color:var(--blue);
-   color:white
-}
-.btn-blue:hover {
-   background-color:inherit
-}
-.btn-green {
-   background-color:var(--green);
-   color:white
-}
-.btn-green:hover {
-   background-color:inherit
-}
-```

@@ -6,11 +6,9 @@ describe('Constructor tests', () => {
 	it('constructor should correctly initialize styles and shorts', () => {
 		const initialStyles = [{'div':{ color: 'red' }}];
 		const initialShorts = { c: 'color' };
-		const defaultShorts = new Simple([]).shorts
 
 		const simple = new Simple(initialStyles, initialShorts);
 		assert.deepStrictEqual(simple.styles,initialStyles);
-		assert.deepStrictEqual(simple.shorts,{ ...defaultShorts, ...initialShorts });
 	});
 
 	it('constructor should throw an error for invalid styles input', () => {
@@ -18,10 +16,6 @@ describe('Constructor tests', () => {
 		assert.throws(() => new Simple(invalidStyles));
 	});
 
-	it('constructor should throw an error for invalid shorts input', () => {
-		const invalidShorts = 'not-an-object';
-		assert.throws(() => new Simple([], invalidShorts));
-	});
 })
 
 describe('Simple methods tests', () => {
@@ -60,6 +54,12 @@ describe('Simple methods tests', () => {
 		const stylesheet = simple.stylesheet()
 		assert(stylesheet.includes('body {'))
 		assert(stylesheet.includes('color:red'))
+	});
+
+	it('Comments', () => {
+		const simple = new Simple(['# Some comment',{ body: { color: 'red' } }])
+		const stylesheet = simple.stylesheet()
+		assert(stylesheet.includes('/* Some comment'))
 	});
 })
 
@@ -166,4 +166,13 @@ describe('Complex tests', () => {
 		assert(stylesheet.includes('background:red')); // Проверка сохранения фона
 	});
 
+})
+
+describe('raw method tests', () => {
+	it('Simple test', () => {
+		const {styles} = Simple.raw(`body {
+			bgc:blue;
+		}`)
+		assert(JSON.stringify(styles) === '[{"body":{"background-color":"blue"}}]')
+	})
 })

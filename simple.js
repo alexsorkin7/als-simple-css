@@ -173,6 +173,27 @@ function buildPropValue(propValue) {
    propValue = getVars(propValue)
    propValue = propValue.replace(/\!/, '!important')
    return propValue
+}
+function buildString(string, styles) {
+   string = string.trim()
+   if (string.startsWith('#')) string = '/*' + string.replace(/^\#/, '') + '*/' // It's a comment
+   styles.push(string)
+}
+function buildStyles(simples, styles = [], shorts = defaultShorts) {
+   simples.forEach(obj => {
+      if (typeof obj === 'string') return buildString(obj, styles,shorts)
+      if (typeof obj !== 'object' || obj === null) return
+      obj = flatStyles(obj)
+      for (let selector in obj) {
+         const rules = Array.isArray(obj[selector])
+            ? buildStyles(obj[selector],[],shorts) // @media/@keyframes/...
+            : buildRules(obj[selector], shorts)
+         const index = styles.findIndex(obj => obj[selector] !== undefined)
+         if(index >= 0) styles[index][selector] = {...styles[index][selector],...rules} // group by selector
+         else styles.push({ [selector]: rules }) 
+      }
+   });
+   return styles
 }
 
 function getCssRules(styles, space = '   ', n = '\n', s = '') {
@@ -187,40 +208,22 @@ function getCssRules(styles, space = '   ', n = '\n', s = '') {
    })
 }
 class Simple {
-   constructor(simples = [], shorts = {}) {
+   static shorts = defaultShorts
+   static raw(content, comments = true) {
+      if (typeof content !== 'string') throw 'rawSimple parameter has to be string'
+      if (cssParser === undefined) throw 'cssParser not found.'
+      return new Simple(cssParser(content, comments))
+   }
+   static styles(simples) { return new Simple(simples) }
+   constructor(simples = []) {
       if (!Array.isArray(simples)) throw new Error('simples parameter should be arrray')
-      if (typeof shorts !== 'object') throw new Error('shorts parameter should be object')
-      this.shorts = Object.assign({}, defaultShorts, shorts);
-      this.styles = []
-      this.selectors = []
-      this.buildStyles(simples, this.styles)
+      this.styles = buildStyles(simples, [], Simple.shorts)
    }
-   buildStyles(simples, styles = []) {
-      simples.forEach(obj => {
-         if (typeof obj === 'string') return this.buildString(obj, styles)
-         if (typeof obj !== 'object' || obj === null) return
-         obj = flatStyles(obj)
-         for (let selector in obj) {
-            const rules = Array.isArray(obj[selector])
-               ? this.buildStyles(obj[selector]) // @media/@keyframes/...
-               : buildRules(obj[selector], this.shorts)
-            const index = styles.findIndex(obj => obj[selector] !== undefined)
-            if(index >= 0) styles[index][selector] = {...styles[index][selector],...rules} // group by selector
-            else styles.push({ [selector]: rules }) 
-         }
-      });
-      return styles
-   }
-   buildString(string, styles) {
-      string = string.trim()
-      if (string.startsWith('#')) string = '/*' + string.replace(/^\#/, '') + '*/' // It's a comment
-      styles.push(string)
-   }
-   stylesheet(spaces) {
+   stylesheet(spaces, n = '\n') {
       const rules = (spaces && typeof spaces === 'number' && spaces > 0)
-      ? getCssRules(this.styles,' '.repeat(spaces),'\n')
-      : getCssRules(this.styles,'','')
-      return rules.join('\n')
+         ? getCssRules(this.styles, ' '.repeat(spaces), n)
+         : getCssRules(this.styles, '', '')
+      return rules.join(n)
    }
 
    publish() {

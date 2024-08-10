@@ -1,4 +1,4 @@
-const { readFileSync, writeFileSync, watch } = require('fs')
+const { readFileSync, writeFileSync, watch, existsSync } = require('fs')
 const { join } = require('path')
 
 const dir = join(__dirname, '..', 'lib')
@@ -6,6 +6,7 @@ const files = [
    'shorts',
    'flat-styles',
    'build-rules',
+   'build-styles',
    'get-css-rules',
    'simple'
 ]
@@ -31,8 +32,21 @@ return Simple
 }
 
 function esmVersion(content) {
-   return content + `
-export default Simple`
+   let nodeModulesPath = join(__dirname,'..','node_modules')
+   if(!existsSync(nodeModulesPath)) {
+      if(existsSync(join(__dirname,'..','..'))) nodeModulesPath = join(__dirname,'..','..')
+      else if(nodeModulesPath === undefined) throw 'Please install dependencies'
+   }
+   const cssparser = readFileSync(join(nodeModulesPath,'als-css-parse','css-parser.js'),'utf-8')
+   const colorTools = readFileSync(join(nodeModulesPath,'als-color-tools','color-tools.js'),'utf-8')
+   .replace('try { module.exports = ColorTools } catch (error) { }','')
+   return [
+      cssparser,
+      colorTools,
+      content,
+      'Simple.ColorTools = ColorTools;',
+      'export default Simple',
+   ].join('\n')
 }
 
 function write() {
