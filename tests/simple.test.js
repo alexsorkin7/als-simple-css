@@ -176,3 +176,17 @@ describe('raw method tests', () => {
 		assert(JSON.stringify(styles) === '[{"body":{"background-color":"blue"}}]')
 	})
 })
+
+describe('Group properties', () => {
+	it('simple group', () => {
+		const styles = Simple.raw(/*simple*/`
+		.btn {
+			fs:1rem;
+			bgc,b,td:none;
+			c:white;
+		}`)
+
+		const expected = [{".btn":{"font-size":"1rem","background-color":"none","border":"none","text-decoration":"none","color":"white"}}]
+		assert.deepStrictEqual(styles.styles,expected)
+	})
+})

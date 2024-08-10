@@ -1,6 +1,6 @@
 {
   "name": "als-simple-css",
-  "version": "10.0.0",
+  "version": "10.1.0",
   "description": "Simplify building CSS styles with JS.",
   "main": "index.js",
   "directories": {

@@ -221,3 +221,18 @@ div:focus {
    color:green
 }
 ```
+
+### Grouping properties
+
+```js
+Simple.raw(`.btn {bgc,b,td:none;}`).stylesheet(3)
+```
+
+Result:
+```css
+.btn {
+   background-color:none;
+   border:none;
+   text-decoration:none
+}
+```

@@ -9,3 +9,7 @@
   * `Simple.shorts`
     * No second parameter `shorts` in constructor
 * Documentation changes
+
+## Version 10.1.0
+
+* Grouping properties

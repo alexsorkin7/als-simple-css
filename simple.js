@@ -125,7 +125,7 @@ function flatStyles(styles,newStyles = {}) {
             flatStyles({[nestedSelecor]:value},newStyles)
          } else { // prop:value
             if(!newStyles[selector]) newStyles[selector] = {}
-            newStyles[selector][prop] = value
+            prop.split(',').forEach(propname => newStyles[selector][propname] = value)
          }
       }
    }
